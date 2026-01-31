@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 #from bs4 import BeautifulSoup
 import requests
 import logging
@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 
 @app.route('/')
 def home():
-    return jsonify({"home": "weather API running"})
+    return render_template("index.html")
 
 def get_coordinates(zip_code):
     url = f"https://api.zippopotam.us/us/{zip_code}"
@@ -85,7 +85,7 @@ def fetch_weather():
             "temperature": period["temperature"]
         })
 
-    return jsonify(results)
+    return render_template("forecast.html", forecast=results)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Forecast Results</title>
+    </head>
+    <body>
+        <h1>Forecast Results</h1>
+
+        <a href="/">Back</a>
+
+        <ul>
+            {% for period in forecast %}
+                <li>
+                    <strong>{{ period.name }}</strong> -
+                    {{ period.forecast }} - 
+                    {{ period.temperature }}
+                </li>
+            {% endfor %}
+        </ul>
+    </body> 
+</html>
