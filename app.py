@@ -7,16 +7,50 @@ app = Flask(__name__)
 def home():
     return jsonify({"home": "weather API running"})
 
-@app.route('/forecast')
+def get_coordinates(zip_code):
+    url = f"https://api.zippopotam.us/us/{zip_code}"
+
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+
+        place = response.json()["places"][0]
+        lat = float(place["latitude"])
+        lon = float(place["longitude"])
+
+        return lat, lon
+    
+    except requests.exceptions.RequestException as e:
+        print("Request failed", e)
+        return None, None
+
+@app.route('/forecast') #Note: use /forecast?lat=num&lon=num or forecast?zip=num
 def fetch_weather():
+    zip_code = request.args.get("zip")
     lat = request.args.get("lat")
     lon = request.args.get("lon")
 
-    if not lat or not lon:
-        return jsonify({"Error": "lat and lon are required"}), 400
+    if zip_code:
+        if not zip_code.isdigit() or len(zip_code) != 5:
+            return jsonify({"error": "Invalid ZIP code"}), 400
+        
+        lat, lon = get_coordinates(zip_code)
+
+        if not lat or not lon:
+            return jsonify({"error": "Could not resolve ZIP code"}), 404
+        
+    elif lat and lon:
+        try:
+            lat = float(lat)
+            lon = float(lon)
+        except ValueError:
+            return jsonify({"error": "Invalid coordinates"}), 400
+    else:
+        return jsonify({"error": "Provide zip OR lat/lon"}), 400
     
-    points_url = f"https://api.weather.gov/points/{lat}, {lon}"
-    points_resp = requests.get(points_url)
+    points_url = f"https://api.weather.gov/points/{lat},{lon}"
+    headers = {"User-Agent": "william-weather-api"}
+    points_resp = requests.get(points_url, headers=headers, timeout=5)
 
     if points_resp.status_code != 200:
         return jsonify({"error": "Invalid location"}), 400
@@ -32,9 +66,9 @@ def fetch_weather():
 
     if forecast_resp.status_code != 200:
         return jsonify({"error": "Failed to fetch weather data"})
-    data = forecast_resp.json()
+    forecast_data = forecast_resp.json()
     
-    periods = data["properties"]["periods"]
+    periods = forecast_data["properties"]["periods"]
 
     results = []
 
