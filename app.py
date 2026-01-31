@@ -1,7 +1,10 @@
 from flask import Flask, jsonify, request
 #from bs4 import BeautifulSoup
 import requests
+import logging
 app = Flask(__name__)
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 @app.route('/')
 def home():
@@ -21,7 +24,7 @@ def get_coordinates(zip_code):
         return lat, lon
     
     except requests.exceptions.RequestException as e:
-        print("Request failed", e)
+        logging.error(f"ZIP lookup failed for {zip_code}: {e}")
         return None, None
 
 @app.route('/forecast') #Note: use /forecast?lat=num&lon=num or forecast?zip=num
@@ -29,7 +32,7 @@ def fetch_weather():
     zip_code = request.args.get("zip")
     lat = request.args.get("lat")
     lon = request.args.get("lon")
-
+  
     if zip_code:
         if not zip_code.isdigit() or len(zip_code) != 5:
             return jsonify({"error": "Invalid ZIP code"}), 400
@@ -47,6 +50,9 @@ def fetch_weather():
             return jsonify({"error": "Invalid coordinates"}), 400
     else:
         return jsonify({"error": "Provide zip OR lat/lon"}), 400
+    
+    logging.info(f"Resolved ZIP {zip_code} to lat={lat}, lon={lon}")
+    logging.info(f"Requesting forecast from weather.gov for {lat},{lon}")
     
     points_url = f"https://api.weather.gov/points/{lat},{lon}"
     headers = {"User-Agent": "william-weather-api"}
