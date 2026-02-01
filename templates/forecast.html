@@ -2,20 +2,23 @@
 <html>
     <head>
         <title>Forecast Results</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     </head>
     <body>
-        <h1>Forecast Results</h1>
+        <div class="container">
+            <h1>Forecast Results</h1>
 
-        <a href="/">Back</a>
+            <a href="/">Back</a>
 
-        <ul>
-            {% for period in forecast %}
-                <li>
-                    <strong>{{ period.name }}</strong> -
-                    {{ period.forecast }} - 
-                    {{ period.temperature }}
-                </li>
-            {% endfor %}
-        </ul>
+            <div class="forecast">
+                {% for period in forecast[:5] %}
+                    <div class="forecast-item">
+                        <div class="period-name">{{ period.name }}</div>
+                        <div class="temp">{{ period.temperature }}</div>
+                        <div class="description">{{ period.forecast }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </body> 
 </html>

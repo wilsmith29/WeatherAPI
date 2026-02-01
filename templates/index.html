@@ -2,14 +2,17 @@
 <html>
     <head>
         <title>Dynamic Weather App</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     </head>
     <body>
-        <h1>Weather Lookup</h1>
+        <div class="container">
+            <h1>Weather Lookup</h1>
 
-        <form method="GET" action="/forecast">
-            <label>ZIP Code:</label>
-            <input type="text" name="zip" required>
-            <button type="submit">Get Forecast</button>
-        </form>
+            <form method="GET" action="/forecast">
+                <label>ZIP Code:</label>
+                <input type="text" name="zip" required>
+                <button type="submit">Get Forecast</button>
+            </form>
+        </div>
     </body> 
 </html>
