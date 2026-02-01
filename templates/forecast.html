@@ -14,7 +14,7 @@
                 {% for period in forecast[:5] %}
                     <div class="forecast-item">
                         <div class="period-name">{{ period.name }}</div>
-                        <div class="temp">{{ period.temperature }}</div>
+                        <div class="temp">{{ period.temperature }}°</div>
                         <div class="description">{{ period.forecast }}</div>
                     </div>
                 {% endfor %}
